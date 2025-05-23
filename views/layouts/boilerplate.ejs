@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WanderLust | Holidays rentals, cabins, villa, beach house & more</title>
+  <link rel="icon" href="/images/logo3.jpg" type="image/png">
+
+  <!-- 🌐 Stylesheets -->
+  <link rel="stylesheet" href="/css/style.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    crossorigin="anonymous" />
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="/css/rating.css" rel="stylesheet" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
+  <!-- 🌓 Dark Mode Styling -->
+  <style>
+    body.dark {
+      background-color: #181818 !important;
+      color: #eaeaea !important;
+    }
+
+    body.dark .card,
+    body.dark .modal-content,
+    body.dark .accordion-item,
+    body.dark .form-control,
+    body.dark .table,
+    body.dark .show-card,
+    body.dark .listing-card {
+      background-color: #1f1f1f !important;
+      color: #eaeaea !important;
+      border-color: #444 !important;
+    }
+
+    body.dark input,
+    body.dark textarea,
+    body.dark select {
+      background-color: #222 !important;
+      color: #f1f1f1 !important;
+      border-color: #555 !important;
+    }
+
+    body.dark input::placeholder,
+    body.dark textarea::placeholder {
+      color: #999 !important;
+    }
+
+    body.dark .btn {
+      background-color: #2e2e2e !important;
+      color: #f1f1f1 !important;
+      border: 1px solid #666 !important;
+    }
+
+    body.dark .btn-outline-dark {
+      color: #f1f1f1 !important;
+      border-color: #888 !important;
+    }
+
+    body.dark .btn:hover {
+      background-color: #444 !important;
+    }
+
+    body.dark b,
+    body.dark strong {
+      color: #fff !important;
+    }
+
+    body.dark i,
+    body.dark .ri,
+    body.dark .fa,
+    body.dark svg {
+      color: #f1f1f1 !important;
+      fill: #f1f1f1 !important;
+    }
+
+    #darkToggle {
+      z-index: 9999;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 🌓 Theme Toggle -->
+  <button id="darkToggle" title="Toggle theme" class="btn btn-outline-dark position-fixed" style="
+    top: 85px;
+    right: 20px;
+    z-index: 9999;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;">
+    <i id="themeIcon" class="fa-solid fa-moon"></i>
+  </button>
+
+  <!-- 🔄 Preloader -->
+  <div id="preloader"></div>
+
+  <!-- 🌍 Main Layout -->
+  <%- include("../includes/navbar.ejs") %>
+    <div class="container">
+      <%- include("../includes/flash.ejs") %>
+        <%- body %>
+    </div>
+    <%- include("../includes/footer.ejs") %>
+
+      <!-- 📜 JS Scripts -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+      <script src="/js/script.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+      <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+
+      <!-- 🌙 Dark Mode Script with Auto Time Toggle -->
+      <script>
+        const toggleBtn = document.getElementById('darkToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+
+        function applyTheme(theme) {
+          if (theme === 'dark') {
+            body.classList.add('dark');
+            themeIcon.classList.remove('fa-sun');
+            themeIcon.classList.add('fa-moon');
+          } else {
+            body.classList.remove('dark');
+            themeIcon.classList.remove('fa-moon');
+            themeIcon.classList.add('fa-sun');
+          }
+        }
+
+        const savedTheme = localStorage.getItem('theme');
+        if (!savedTheme) {
+          const hour = new Date().getHours();
+          const autoTheme = hour >= 18 || hour < 6 ? 'dark' : 'light';
+          localStorage.setItem('theme', autoTheme);
+          applyTheme(autoTheme);
+        } else {
+          applyTheme(savedTheme);
+        }
+
+        toggleBtn.addEventListener('click', () => {
+          const current = body.classList.contains('dark') ? 'dark' : 'light';
+          const next = current === 'dark' ? 'light' : 'dark';
+          localStorage.setItem('theme', next);
+          applyTheme(next);
+        });
+      </script>
+
+      <!-- 🤖 Botpress Chatbot Script (Numan Ahamed Assistant) -->
+
+      <script src="https://cdn.botpress.cloud/webchat/v2.3/inject.js"></script>
+      <script src="https://files.bpcontent.cloud/2025/04/11/12/20250411120838-UV59QRLU.js"></script>
+
+</body>
+
+</html>

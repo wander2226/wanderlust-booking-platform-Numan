@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WanderLust Booking Info</title>
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f9f9f9;
+        padding: 20px;
+        color: #333;
+      }
+      .container {
+        max-width: 700px;
+        margin: auto;
+        background: white;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      }
+      h2 {
+        color: #e91e63;
+      }
+      ul {
+        padding-left: 20px;
+      }
+      .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #ff5a5f;
+        color: white;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-top: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>🌍 Thank You for Your Interest in <b><%= listing.title %></b>!</h2>
+      <p>
+        We’re thrilled to help you plan your upcoming trip to <b><%= listing.location %>, <%= listing.country %></b>. Below are your booking details:
+      </p>
+
+      <h3>📅 Stay Details:</h3>
+      <ul>
+        <li><b>Check-in:</b> <%= checkinDate %></li>
+        <li><b>Check-out:</b> <%= checkoutDate %></li>
+        <li><b>Number of Nights:</b> <%= nights %></li>
+        <li><b>Total Price:</b> $<%= totalPrice %> USD</li>
+      </ul>
+
+      <h3>💳 How to Make Payment:</h3>
+      <p>
+        To confirm your booking, please complete your payment using the secure <a href="https://yourdomain.com/payments/create-checkout-session/<%= listing._id %>" class="btn">Stripe Checkout</a> link provided.
+      </p>
+      <p><i>We support all major cards, Apple Pay, and Google Pay.</i></p>
+
+      <h3>📍 Nearby Attractions:</h3>
+      <ul>
+        <li>🏖️ Beach - 5 mins walk</li>
+        <li>🍴 Local Restaurants & Cafés - 300m</li>
+        <li>🛍️ Shopping Malls - 2km</li>
+        <li>🕌 Cultural Landmarks & Mosques nearby</li>
+      </ul>
+
+      <h3>🏠 Top Amenities:</h3>
+      <ul>
+        <li>Wi-Fi & Smart TV</li>
+        <li>Private Pool & Garden</li>
+        <li>Fully Equipped Kitchen</li>
+        <li>24x7 Security Cameras</li>
+        <li>Airport Pickup (On Request)</li>
+      </ul>
+
+      <h3>📝 Next Steps:</h3>
+      <ul>
+        <li>Complete your payment to finalize the booking.</li>
+        <li>Check your email for the invoice and contact details.</li>
+        <li>Enjoy your stay with WanderLust!</li>
+      </ul>
+
+      <p>
+        Need help? Reach out to our support team anytime at <b>support@wanderlust.com</b>
+      </p>
+
+      <p>Warm regards,<br>🌟 Team WanderLust</p>
+    </div>
+  </body>
+</html>

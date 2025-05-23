@@ -1,0 +1,324 @@
+<% layout("/layouts/boilerplate") %>
+
+  <div class="filters-main">
+    <div id="filters">
+      <div class="filter-width">
+        <a href="/listings">
+          <div class="filter">
+            <div><i class="fa-solid fa-fire"></i></div>
+            <p>Trending</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Beachfront">
+          <div class="filter">
+            <div><i class="fa-solid fa-umbrella-beach"></i></div>
+            <p>Beachfront</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Farms">
+          <div class="filter">
+            <div><i class="fa-solid fa-tractor"></i></div>
+            <p>Farms</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Omg">
+          <div class="filter">
+            <div><i class="fa-brands fa-space-awesome"></i></div>
+            <p>OMG</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Lake">
+          <div class="filter">
+            <div><i class="fa-solid fa-water"></i></div>
+            <p>Lake</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Design">
+          <div class="filter">
+            <div><i class="fa-brands fa-fort-awesome"></i></div>
+            <p>Design</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Amazing Pools">
+          <div class="filter">
+            <div><i class="fa-solid fa-person-swimming"></i></div>
+            <p>Pools</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Amazing Views">
+          <div class="filter">
+            <div><i class="fa-solid fa-city"></i></div>
+            <p>City</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Rooms">
+          <div class="filter">
+            <div><i class="fa-solid fa-person-booth"></i></div>
+            <p>Rooms</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Lakefront">
+          <div class="filter">
+            <div><i class="fa-brands fa-cloudflare"></i></div>
+            <p>Lakefront</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Tiny Homes">
+          <div class="filter">
+            <div><i class="fa-solid fa-house-user"></i></div>
+            <p>Tiny</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Countryside">
+          <div class="filter">
+            <div><i class="fa-solid fa-mountain-sun"></i></div>
+            <p>Countryside</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Cabins">
+          <div class="filter">
+            <i class="fa-solid fa-house-chimney-window"></i>
+            <p>Cabins</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Treehouse">
+          <div class="filter">
+            <div><i class="fa-solid fa-tree"></i></div>
+            <p>Treehouse</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Tropical">
+          <div class="filter Tropical">
+            <div><i class="fa-solid fa-house-fire"></i></div>
+            <p>Tropical</p>
+          </div>
+        </a>
+        <a href="/listings/filter/National Parks">
+          <div class="filter National-parks">
+            <div><i class="fa-solid fa-democrat"></i></div>
+            <p>Parks</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Castles">
+          <div class="filter Castles">
+            <div><i class="fa-brands fa-fort-awesome"></i></div>
+            <p>Castles</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Camping">
+          <div class="filter Camping">
+            <div><i class="fa-solid fa-tents"></i></div>
+            <p>Camping</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Top Of The World">
+          <div class="filter Top-of-the-world">
+            <div><i class="fa-solid fa-square-person-confined"></i></div>
+            <p>World</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Luxe">
+          <div class="filter Luxe">
+            <div><i class="fa-solid fa-building-user"></i></div>
+            <p>&nbsp;Luxe&nbsp;</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Iconic Cities">
+          <div class="filter Iconic-cities">
+            <div><i class="fa-solid fa-tree-city"></i></div>
+            <p>Iconic Cities</p>
+          </div>
+        </a>
+        <a href="/listings/filter/Earth Homes">
+          <div class="filter Earth-homes">
+            <div><i class="fa-solid fa-building-shield"></i></div>
+            <p>Earth Homes</p>
+          </div>
+        </a>
+      </div>
+      <div>&nbsp;&nbsp;&nbsp;</div>
+      <div class="filter-box">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#exampleModal">
+          <i class="ri-equalizer-line">&nbsp;Filters</i>
+        </button>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel"><b>Filters</b></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <form method="GET" action="/listings">
+                <div class="modal-body">
+
+                  <input type="hidden" name="bedrooms" id="bedrooms" value="any" />
+                  <input type="hidden" name="beds" id="beds" value="any" />
+                  <input type="hidden" name="bathrooms" id="bathrooms" value="any" />
+
+
+                  <h5>Price range</h5>
+                  <p>Nightly prices before fees and taxes</p>
+                  <div class="container text-center mb-3">
+                    <div class="row">
+                      <div class="col">
+                        <input type="number" class="form-control" name="minPrice" placeholder="Min Price ₹" />
+                      </div>
+                      <div class="col">
+                        <input type="number" class="form-control" name="maxPrice" placeholder="Max Price ₹" />
+                      </div>
+                    </div>
+                  </div>
+                  <hr>
+
+                  <h5><strong>Property type</strong></h5>
+                  <div class="property">
+                    <div class="property-type">
+                      <input type="checkbox" name="propertyType" value="House" />
+                      <label>House</label>
+                    </div>
+                    <div class="property-type">
+                      <input type="checkbox" name="propertyType" value="Flat" />
+                      <label>Flat</label>
+                    </div>
+                    <div class="property-type">
+                      <input type="checkbox" name="propertyType" value="Guests house" />
+                      <label>Guests house</label>
+                    </div>
+                    <div class="property-type">
+                      <input type="checkbox" name="propertyType" value="Hotel" />
+                      <label>Hotel</label>
+                    </div>
+                  </div>
+                  <hr>
+
+                  <h5><strong>Amenities</strong></h5>
+                  <div class="amentities">
+                    <div class="amentities-item">
+                      <p><input type="checkbox" name="amenities" value="Wifi" /> Wifi</p>
+                      <p><input type="checkbox" name="amenities" value="Kitchen" /> Kitchen</p>
+                      <p><input type="checkbox" name="amenities" value="Heating" /> Heating</p>
+                      <p><input type="checkbox" name="amenities" value="TV" /> TV</p>
+                      <p><input type="checkbox" name="amenities" value="Pool" /> Pool</p>
+                    </div>
+                    <div class="amentities-item">
+                      <p><input type="checkbox" name="amenities" value="Gym" /> Gym</p>
+                      <p><input type="checkbox" name="amenities" value="Breakfast" /> Breakfast</p>
+                      <p><input type="checkbox" name="amenities" value="BBQ grill" /> BBQ grill</p>
+                      <p><input type="checkbox" name="amenities" value="fireplace" /> Fireplace</p>
+                    </div>
+                  </div>
+
+                  <hr>
+                  <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Apply Filters</button>
+                  </div>
+                </div>
+              </form>
+
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal"><a href="/"
+                    style="text-decoration: none; color: white;">Show</a></button>
+                <!-- <button type="button" class="btn btn-success" data-bs-dismiss="modal">Dismiss</button> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tax-toggle">
+        <div class="form-check-reverse form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault"
+            style="cursor: pointer;">
+          <label class="form-check-label" for="flexSwitchCheckDefault">Display total after taxes</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="responsive" style="margin-top: 20px;">
+    <div class="form-check-reverse form-switch">
+      <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault2">
+      <label class="form-check-label" for="flexSwitchCheckDefault2">Display total after taxes</label>
+    </div>
+  </div>
+
+  <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+    <% for(let listing of listings) { %>
+      <a href="/listings/<%= listing._id %>" class="listing-link">
+        <div class="card col listing-card">
+          <div id="container">
+            <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem" />
+          </div>
+
+          <!-- heart -  &#9829; -->
+          <div class="card-img-overlay"><i class="ri-heart-fill"></i></div>
+          <div class="card-body">
+            <p class="card-text">
+
+              <strong>
+                <%= listing.title %>
+              </strong><br><span style="color: grey;"><i class="fa-solid fa-location-dot">&nbsp;</i>
+                <%= listing.country %>
+              </span>
+            <div class="price" style="margin-top: -12px;">$ <%= listing.price.toLocaleString("en-US") %> night<br></div>
+            <span class="tax-info" style="text-decoration: underline;">$ <%= (listing.price * 1.18).toFixed(2) %> &nbsp;
+                Includes 18% Tax</span>
+            <i class="tax-info2" style="text-decoration: underline;">$ <%= (listing.price * 1.8).toFixed(2) %> &nbsp;
+                Includes Premium Tax</i>
+
+
+            </p>
+          </div>
+        </div>
+      </a>
+      <% } %>
+  </div>
+
+  <script src="/js/script.js"></script>
+
+  <script>
+    let price = document.getElementsByClassName("price");
+    let taxSwitch = document.getElementById("flexSwitchCheckDefault");
+    taxSwitch.addEventListener("click", () => {
+      let taxInfo = document.getElementsByClassName("tax-info");
+      for (info of taxInfo) {
+        if (info.style.display != "inline") {
+          info.style.display = "inline";
+          info.style.fontWeight = "bold";
+          info.style.color = "crimson";
+        } else {
+          info.style.display = "none";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    let taxSwitch2 = document.getElementById("flexSwitchCheckDefault2");
+    taxSwitch2.addEventListener("click", () => {
+      let taxInfo2 = document.getElementsByClassName("tax-info2");
+      for (info of taxInfo2) {
+        if (info.style.display != "inline") {
+          info.style.display = "inline";
+          info.style.fontWeight = "bold";
+        } else {
+          info.style.display = "none";
+        }
+      }
+    });
+  </script>
+
+  <script>
+    const bars = document.querySelectorAll(".bar");
+
+    // Set the heights for each bar representing the price range
+    const prices = [
+      10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10,
+      5,
+    ];
+    // Adjust prices as needed
+    bars.forEach((bar, index) => {
+      bar.style.height = prices[index] + "px";
+    });
+  </script>

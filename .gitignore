@@ -1,0 +1,22 @@
+# Ignore environment variables
+.env
+
+# Node dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# Optional npm cache
+.npm/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# VS Code settings
+.vscode/
+
+# OS-specific
+*.swp

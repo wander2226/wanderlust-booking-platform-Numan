@@ -1,0 +1,775 @@
+<% layout("/layouts/boilerplate") %>
+
+  <div class="row mt-3" id="show-body">
+    <div class="col-8 offset-3">
+      <h3 id="lis-tit">
+        <%= listing.title %>
+      </h3>
+    </div>
+
+    <div class="card col-6 offset-3 show-card listing-card">
+      <img src="<%= listing.image.url %>" class="card-img-top show-img" alt="listing_image" />
+
+      <div class="card-body">
+        <p class="card-text mt-2">
+          Hosted by <i>
+            <%= listing.owner?.username || listing.owner?.email || "Host Not Available" %>
+          </i>
+        </p>
+
+        <p class="card-text"><b>Description : </b>
+          <%= listing.description %>
+        </p>
+        <p class="card-text"><b>Cost:</b> $<%= listing.price.toLocaleString("en-US") %> / night</p>
+
+
+
+        <!-- ✅ Check-in/Checkout Input -->
+        <input type="text" id="daterange" class="form-control my-2" placeholder="Select your stay dates" />
+
+        <!-- ✅ Hidden inputs to store dates -->
+        <input type="hidden" id="checkin" name="checkIn">
+        <input type="hidden" id="checkout" name="checkOut">
+
+        <!-- ✅ Show Total Price Here -->
+        <p id="usd-price" class="text-success fw-bold mt-2"></p>
+        <p id="rooms-availability" class="text-info fw-bold mt-1"></p>
+
+        <div class="text-muted mt-2 mb-4" style="font-size: 0.9rem;">
+          ✅ <span style="background:#d4fdd4;padding:2px 6px;">Available</span>
+          &nbsp;&nbsp;
+          ❌ <span style="text-decoration:line-through;color:#a70000;">Fully Booked</span>
+          &nbsp;&nbsp;
+          ⚠️ <span style="border:2px solid orange;padding:2px 6px;">Few Rooms Left</span>
+        </div>
+
+        <!-- 📩 Know More Button -->
+        <% if (success && success.length> 0) { %>
+          <div
+            class="alert alert-success alert-dismissible fade show shadow border border-success border-2 w-75 mx-auto text-center fs-5"
+            role="alert">
+            <%= success %>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          <% } %>
+
+            <form action="/listings/<%= listing._id %>/know-more" method="POST" class="mt-2 row g-2 align-items-center">
+              <div class="col-auto w-75">
+                <input type="email" name="email" class="form-control"
+                  placeholder="Enter your email to receive full details" required>
+              </div>
+
+              <input type="hidden" name="checkin" id="knowMoreCheckin">
+              <input type="hidden" name="checkout" id="knowMoreCheckout">
+              <input type="hidden" name="rooms" id="knowMoreRooms">
+
+              <div class="col-auto">
+                <button type="submit" class="btn btn-outline-primary">📩 Know More</button>
+              </div>
+            </form>
+
+            <% if (currUser) { %>
+              <!-- ✅ Room selection dropdown -->
+              <div class="my-3">
+                <label for="rooms" class="form-label"><strong>Select number of rooms:</strong></label>
+                <select id="rooms" name="rooms" class="form-select w-50" required>
+                  <% for (let i=1; i <=listing.totalRooms; i++) { %>
+                    <option value="<%= i %>">
+                      <%= i %> Room(s)
+                    </option>
+                    <% } %>
+                </select>
+              </div>
+
+              <!-- Hidden input to send room count -->
+              <input type="hidden" id="roomsSelected" name="rooms" />
+
+              <form id="stripeCheckoutForm" method="GET">
+                <input type="hidden" id="checkout-checkin" name="checkin">
+                <input type="hidden" id="checkout-checkout" name="checkout">
+                <input type="hidden" id="checkout-rooms" name="rooms">
+                <button type="submit" class="btn btn-primary">💳 Book Now</button>
+              </form>
+
+
+
+
+              <% } else { %>
+                <p class="text-danger mt-3">⚠️ Please log in to book this listing.</p>
+                <% } %>
+
+                  <p class="card-text">
+                    <b>Category :</b>
+                    <%= listing.category.slice(",").join(", ") %>
+</p>
+
+      <p class=" card-text">
+                      <b>Place :</b>&nbsp;&nbsp;<i class="fa-solid fa-location-dot"></i>&nbsp;<%= listing.location %>
+                  </p>
+                  <p class="card-text">
+                    <b>Country :</b>&nbsp;&nbsp;<i class="fa-solid fa-globe"></i>&nbsp;<%= listing.country %>
+                  </p>
+      </div>
+    </div>
+
+    <% if (currUser && listing.owner && listing.owner._id && listing.owner._id.equals(currUser._id)) { %>
+      <div class="btns mb-5" style="margin-left: 10px">
+        <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark col-1 offset-3 edit-btn">Edit</a>
+
+        <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE">
+          <button class="btn btn-dark offset-5">Delete</button>
+        </form>
+      </div>
+      <% } %>
+  </div>
+
+  <!-- <script>
+    function validateBookingSelection() {
+      const checkin = document.getElementById("checkin").value;
+      const checkout = document.getElementById("checkout").value;
+      const rooms = document.getElementById("roomCount")?.value || 1;
+
+
+      if (!checkin || !checkout) {
+        alert("❌ Please select your check-in and check-out dates before booking.");
+        return false;
+      }
+
+      const form = document.getElementById("stripe-form");
+      const listingId = "<%= listing._id %>";
+      form.action = `/payments/create-checkout-session/${listingId}?checkin=${checkin}&checkout=${checkout}&rooms=${rooms}`;
+
+      return true;
+    }
+  </script> -->
+
+
+
+  <!----------------------- Payment Gateway start ----------------------------->
+
+  <!-------------------------- Payment Gateway End ----------------------------->
+
+  <!-- --------------------------- Review start here ------------------------------->
+
+  <div class="col-8 offset-3 mb-3">
+    <% if(currUser) { %>
+      <hr class="hrshow" />
+      <h4><i class="fa-regular fa-comment"></i> Leave a Review</h4>
+      <form action="/listings/<%= listing._id %>/reviews" method="POST" novalidate class="needs-validation">
+        <div class="mb-3 mt-3">
+          <label for="rating" class="form-label"><i id="rating">Rating</i></label>
+          <fieldset class="starability-slot">
+            <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked
+              aria-label="No rating." />
+            <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+            <label for="first-rate1" title="Terrible">1 star</label>
+            <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+            <label for="first-rate2" title="Not good">2 stars</label>
+            <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+            <label for="first-rate3" title="Average">3 stars</label>
+            <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+            <label for="first-rate4" title="Very good">4 stars</label>
+            <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+            <label for="first-rate5" title="Amazing">5 stars</label>
+          </fieldset>
+        </div>
+        <div class="mb-3 mt-3" id="comments">
+          <label for="comment" class="form-label">Comments</label>
+          <textarea name="review[comment]" id="comment" cols="25" rows="4" class="form-control" required></textarea>
+          <div class="invalid-feedback">Please add some comments for review</div>
+        </div>
+        <button class="btn btn-success">Submit</button>
+      </form>
+      <% } %>
+
+        <% if(listing.reviews.length> 0) { %>
+          <div class="mt-5">
+            <hr class="hrshow" />
+            <h4><i class="fa-solid fa-star text-warning"></i> All Reviews</h4>
+
+            <% for(let review of listing.reviews) { %>
+              <div class="card my-3 shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <i class="fa-solid fa-user text-primary"></i>
+                    <%= review.author.username %>
+                  </h5>
+                  <p class="card-text">
+                    <% for(let i=0; i < review.rating; i++) { %>
+                      <i class="fa-solid fa-star text-warning"></i>
+                      <% } %>
+                        <% for(let i=review.rating; i < 5; i++) { %>
+                          <i class="fa-regular fa-star text-muted"></i>
+                          <% } %>
+                  </p>
+                  <p class="card-text">
+                    <%= review.comment %>
+                  </p>
+
+                  <% if(currUser && currUser._id.equals(review.author._id)) { %>
+                    <div class="d-flex gap-2">
+                      <a href="/listings/<%= review._id %>/reviewedit" class="btn btn-sm btn-outline-success">Edit</a>
+
+                      <form method="POST"
+                        action="/listings/<%= listing._id %>/reviews/<%= review._id %>?_method=DELETE">
+                        <button class="btn btn-sm btn-outline-danger">Delete</button>
+                      </form>
+                    </div>
+                    <% } %>
+                </div>
+              </div>
+              <% } %>
+          </div>
+          <% } %>
+  </div>
+
+  <!-- --------------------------- Review end here ------------------------------->
+
+  <!--------------------------- Offers start --------------------------->
+
+  <div class="col-8 offset-3 my-5">
+    <hr class="hrshow" />
+    <h4>What this place offers</h4>
+    <div class="offers">
+      <i class="ri-restaurant-line"><span> Kitchen</span></i>
+      <i class="ri-car-fill"><span> Parking</span></i>
+      <i class="ri-t-shirt-air-fill"><span> Air conditioning</span></i>
+      <i class="ri-tv-2-line"><span> TV</span></i>
+      <i class="ri-vidicon-line"><span> Security cameras</span></i>
+      <i class="ri-wifi-line"><span> Wifi</span></i>
+      <i class="ri-steam-fill"><span> Gaming</span></i>
+    </div>
+    <div class="offers">
+      <button id="offers" type="button" class="btn btn-outline-dark" data-bs-toggle="modal"
+        data-bs-target="#exampleModal">
+        Show all 50 amenities
+      </button>
+      <!-- Button trigger modal -->
+      <!-- <button
+        id="offers"
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#exampleModal"
+      >
+        Launch demo modal
+      </button> -->
+
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">
+                What this place offers
+              </h1>
+              <!-- <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button> -->
+            </div>
+            <div class="modal-body">
+              <ul>
+                <h5>Scenic views</h5>
+                <li>Lake view</li>
+                <li>Mountain view</li>
+                <li>Pool view</li>
+                <hr />
+              </ul>
+              <ul>
+                <h5>Bathrooms</h5>
+                <li>Cleaning products</li>
+                <li>Shampoo</li>
+                <li>Hot Water</li>
+                <hr />
+              </ul>
+              <ul>
+                <h5>Bedroom and laundry</h5>
+                <li>Essentials</li>
+                <li>Hangers</li>
+                <li>Bed linen</li>
+                <hr />
+              </ul>
+              <ul>
+                <h5>Entertainment</h5>
+                <li>TV with standard cable/satellite</li>
+                <li>Sound system with Bluetooth and aux</li>
+                <li>Pool table</li>
+                <hr />
+              </ul>
+              <ul>
+                <h5>Outdoor</h5>
+                <li>Patio or balcony</li>
+                <li>Garden</li>
+                <li>Hammock</li>
+                <li>Firpit</li>
+                <li>BBQ grill</li>
+                <hr />
+              </ul>
+              <ul>
+                <h5>Kitchen and dining</h5>
+                <li>Dishes and cutlery</li>
+                <li>Barbecue utensils</li>
+                <li>Dining table</li>
+                <li>Freezer</li>
+                <hr />
+              </ul>
+              <ul>
+                <h5>Locations Features</h5>
+                <li>Waterfront</li>
+                <p>Right next to a body of water</p>
+                <li>Lake access</li>
+                <p>Guests can get to a lake using a path or dock</p>
+                <li>Private entrance</li>
+                <p>Separate street or building entrance</p>
+                <hr />
+              </ul>
+              <ul>
+                <h6>and many more...</h6>
+              </ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">
+                Close
+              </button>
+              <!-- <button type="button" class="btn btn-outline-dark">
+                Save changes
+              </button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr class="hrshow" />
+  </div>
+
+  <!------------------= Offers end =----------------->
+
+  <!------------------------- Services start -------------------------------->
+
+  <div class="col-8 offset-3 my-5" id="services">
+    <h4>Add-on services</h4>
+    <p>
+      After booking this home, a trip designer can arrange any of these add-on
+      services.
+    </p>
+    <div class="offers">
+      <i class="ri-flight-takeoff-fill"><span> Airport Transfer</span></i>
+      <i class="ri-goblet-line"><span> Butler</span></i>
+      <i class="ri-luggage-cart-fill"><span> Pre-stocking</span></i>
+      <i class="ri-hand-sanitizer-fill"><span> Cleaning</span></i>
+    </div>
+    <p>Not seeing something that you would like to order?</p>
+
+    <div class="services-offer">
+      <!-- Button trigger modal -->
+      <button id="offers" type="button" class="btn btn-outline-dark" data-bs-toggle="modal"
+        data-bs-target="#staticBackdrop">
+        Message a trip designer
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                <i class="fa-regular fa-circle-user"></i>
+                <%= listing.owner?.username || "Host Not Found" %>
+                  <span>contacting...</span>
+              </h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <div class="contact-form">
+                  <form action="https://formspree.io/f/xpwaywop" method="POST">
+                    <div class="form-group">
+                      <label for="name">Name:</label>
+                      <input type="text" id="name" name="name" class="form-control" placeholder="Azim Premji" required>
+
+                      <label for="email" class="mt-3">Email:</label>
+                      <input type="email" id="email" name="_replyto" class="form-control"
+                        placeholder="azimpremji@gmail.com" required>
+
+                      <label for="message" class="mt-3">Message:</label>
+                      <textarea id="message" name="message" class="form-control" rows="4"
+                        placeholder="Write your message here..." required></textarea>
+
+                      <button type="submit" class="btn btn-success mt-4">Send</button>
+                      <!-- <button type="button" class="btn btn-secondary mt-4" data-bs-dismiss="modal">Close</button> -->
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="hrshow" />
+  </div>
+
+  <!-----------------= services end =------------------->
+
+  <!-------------------------- Map Start -------------------------------->
+
+  <div class="col-8 offset-3 mb-3">
+    <h4 class="maph3">
+      <i class="fa-solid fa-compass fa-spin fa-sm" style="color: #ff0000"></i>&nbsp;Where you’ll be
+    </h4>
+    <p class="card-text maph3" id="location-p" style="margin-top: 10px; font-weight: 100 !important">
+      <%= listing.location %>, <%= listing.country %>
+    </p>
+    <div style="height: 20px"></div>
+    <div id="map"></div>
+  </div>
+
+  <!-------------------- Map End ----------------------->
+
+  <!-------------------- hosted start ---------------------->
+  <hr />
+  <div id="hosted">
+    <div class="hosted">
+      <i class="fa-solid fa-user"></i>
+    </div>
+    <div class="hosted-details">
+      <p>Hosted by: <%= listing.owner?.username || "Host Not Found" %>
+      </p>
+      <p>Email: <%= listing.owner?.email || "Email not available" %>
+      </p>
+      <p id="host-description">
+        Superhosts are experienced, highly rated hosts who are committed to
+        providing great stays for guests.
+      </p>
+      <div id="response-rt">
+        <p>Response rate : 100%</p>
+        <p style="margin-top: -14px">Response time : within an hour</p>
+      </div>
+      <span><i class="ri-verified-badge-line">Identity Verified</i>
+        <i class="ri-medal-line">Superhost</i></span>
+      <!-- <button class="mx-auto btn btn-outline-dark">
+        <a href="https://www.mail.google.com/"></a>Contact host
+      </button> -->
+
+      <div class="services-offer">
+        <!-- Button trigger modal -->
+        <button id="offers" type="button" class="btn btn-outline-dark mx-auto" data-bs-toggle="modal"
+          data-bs-target="#staticBackdrop">
+          Contact Host
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+          aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">
+                  Owned by <%= listing.owner?.username || "Unknown Owner" %>
+                </h1>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="exampleFormControlInput1" class="form-label">Email address</label>
+                  <input type="email" class="form-control" id="exampleFormControlInput1"
+                    placeholder="johnduke19@example.com" />
+                </div>
+                <div class="mb-3">
+                  <label for="exampleFormControlTextarea1" class="form-label">Write your requirments
+                    below</label>
+                  <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr />
+  <!-------------------- hosted end ---------------------->
+
+  <!-------------------- Accordion ------------------->
+  <h2 class="text-center p-4">Frequently Asked Questions</h2>
+  <div class="accordion col-9 mx-auto" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+          aria-expanded="true" aria-controls="collapseOne">
+          How do I search for available properties?
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          To search for available properties, navigate to the <b>Search bar</b> on the homepage. Enter your
+          desired location, title of a house if you already know , category , budget & any other preferences
+          such
+          as amenities or property type. Click on the search button to see a list of available properties that
+          match your criteria.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+          aria-expanded="false" aria-controls="collapseTwo">
+          Can I request additional services or amenities?
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <b>Yes</b>, you can request additional services such as housekeeping, airport transfers, grocery
+          delivery, or special requests like extra bedding or baby cribs. Contact the property owner/manager or
+          use our messaging platform to make your requests.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          What safety measures are in place?
+        </button>
+      </h2>
+      <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          Our properties adhere to <b>Safety</b> standards and may include features such as smoke detectors,
+          fire
+          extinguishers, first aid kits, and emergency contact information. We also recommend familiarizing
+          yourself with the property's layout and emergency exits upon check-in.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseFour" aria-expanded="false" aria-controls="#collapseFour">
+          What payment methods are accepted?
+        </button>
+      </h2>
+      <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          We accept a variety of payment methods including <strong>credit/debit cards (Visa, MasterCard,
+            American
+            Express), PayPal, UPIs, Wallet and bank transfers</strong>. You can choose your preferred payment
+          method during the checkout process. You will get the receipt of your payment method in your email
+          address. This feature is powered by Stripe Payment Gateway.
+          <strong>It is a real integration and can process live payments.</strong>
+
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+          Are pets allowed in the properties?
+        </button>
+      </h2>
+      <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          Some properties may <b>Allow</b> pets while others may have restrictions or additional fees for pets.
+          You can filter your search to find pet-friendly properties or contact the property owner/manager for
+          more information about their pet policy.
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix"
+          aria-expanded="false" aria-controls="collapseSix">
+          Do I need to create an account to add a review or make a payment?
+        </button>
+      </h2>
+      <div id="collapseSix" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+          <strong>Yes</strong>, you need to be logged in to add a review or make a payment for booking a house.
+          Creating an account ensures that we can provide a secure and personalized experience for all our
+          users.
+          It also helps us verify the authenticity of reviews and manage your bookings efficiently. You can
+          easily
+          sign up or log in using the "Login/Sign Up" button on the top right corner of the website.
+        </div>
+      </div>
+    </div>
+    <br>
+  </div>
+  <!-------------------- Accordion end ------------------->
+  </div>
+
+ <!-- ✅ Inject data BEFORE any script uses it -->
+<script>
+  window.mapToken = "<%= mapToken %>";
+  window.listing = <%- JSON.stringify(listing || {}) %>;
+  window.bookings = <%- JSON.stringify(bookings || []) %>;
+</script>
+
+<!-- ✅ Styles (can stay in <head> or here) -->
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
+<!-- ✅ Scripts (MUST come in this exact order) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
+
+<!-- ✅ Must come LAST -->
+<script src="/js/map.js"></script>
+
+
+  <!-- ✅ Calendar Styling -->
+  <style>
+    .flatpickr-day.booked {
+      background-color: #ffcccc !important;
+      text-decoration: line-through;
+      color: #b30000 !important;
+      cursor: not-allowed;
+    }
+
+    .flatpickr-day.available {
+      background-color: #ccffcc !important;
+      color: #004d00;
+    }
+
+    .flatpickr-day.few-left {
+      border: 2px solid orange !important;
+      font-weight: bold;
+    }
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById('stripeCheckoutForm');
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const dates = document.getElementById("daterange")._flatpickr.selectedDates;
+        const checkin = dates[0]?.toISOString().split('T')[0];
+        const checkout = dates[1]?.toISOString().split('T')[0];
+        const rooms = document.getElementById("rooms")?.value || 1;
+
+        if (!checkin || !checkout) {
+          alert("Please select check-in and check-out dates.");
+          return;
+        }
+
+        const listingId = "<%= listing._id %>";
+        const stripeUrl = `/payments/create-checkout-session/${listingId}?checkin=${checkin}&checkout=${checkout}&rooms=${rooms}`;
+        window.location.href = stripeUrl;
+      });
+
+      // === Booking logic ===
+      const listing = window.listing || {};
+      const bookings = window.bookings || [];
+
+      // ✅ Universal price parser
+      function cleanPrice(p) {
+        if (typeof p === "string") {
+          const cleaned = p.replace(/[^0-9.]/g, ""); // remove ₹, $, ,
+          return parseFloat(cleaned) || 0;
+        } else if (typeof p === "number") {
+          return p;
+        } else {
+          return 0;
+        }
+      }
+
+      const listingPrice = typeof listing.price === "number" ? listing.price : cleanPrice(listing.price);  // ✅ must be here before use  // ✅ must be here before use
+      const totalRooms = Number(listing.totalRooms || 1);
+
+
+
+
+      const dateMap = new Map();
+      bookings.forEach(booking => {
+        const checkIn = new Date(booking.checkIn);
+        const checkOut = new Date(booking.checkOut);
+        const current = new Date(checkIn);
+        while (current < checkOut) {
+          const dateStr = current.toISOString().split("T")[0];
+          dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + (booking.rooms || 1));
+          current.setDate(current.getDate() + 1);
+        }
+      });
+
+      flatpickr("#daterange", {
+        mode: "range",
+        minDate: "today",
+        dateFormat: "Y-m-d",
+        disable: [],
+        onDayCreate: function (_, __, ___, dayElem) {
+          const date = dayElem.dateObj.toISOString().split("T")[0];
+          const booked = dateMap.get(date) || 0;
+          const remaining = totalRooms - booked;
+
+          if (booked >= totalRooms) {
+            dayElem.classList.add("booked", "flatpickr-disabled");
+            dayElem.setAttribute("aria-disabled", "true");
+            dayElem.title = `❌ Fully Booked (${totalRooms}/${totalRooms} rooms)`;
+          } else {
+            dayElem.classList.add("available");
+            dayElem.title = `✅ ${remaining} room(s) available`;
+            if (remaining <= 2) {
+              dayElem.classList.add("few-left");
+              dayElem.title += " ⚠️ Few rooms left!";
+            }
+          }
+        },
+        onChange: function (selectedDates) {
+          if (selectedDates.length === 2) {
+            const [checkin, checkout] = selectedDates;
+            const nights = Math.max(1, Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24)));
+            const rooms = parseInt(document.getElementById("rooms")?.value || "1");
+            const total = listingPrice * nights * rooms;
+
+            const checkinStr = checkin.toISOString().split("T")[0];
+            const checkoutStr = checkout.toISOString().split("T")[0];
+
+            document.getElementById("checkin").value = checkinStr;
+            document.getElementById("checkout").value = checkoutStr;
+            document.getElementById("knowMoreCheckin").value = checkinStr;
+            document.getElementById("knowMoreCheckout").value = checkoutStr;
+
+            if (!isNaN(total)) {
+              document.getElementById("usd-price").innerText =
+                `💵 Total: $${total.toLocaleString("en-US")} for ${nights} night(s)`;
+            } else {
+              document.getElementById("usd-price").innerText =
+                "💵 Total: Invalid price (contact admin)";
+            }
+
+            let minAvailable = Infinity;
+            const current = new Date(checkin);
+            while (current < checkout) {
+              const dateStr = current.toISOString().split("T")[0];
+              const booked = dateMap.get(dateStr) || 0;
+              const remaining = totalRooms - booked;
+              minAvailable = Math.min(minAvailable, remaining);
+              current.setDate(current.getDate() + 1);
+            }
+
+            document.getElementById("rooms-availability").innerText =
+              `🛏️ Remaining Rooms: ${minAvailable} available per day in selected range`;
+          }
+        }
+      });
+
+      // ✅ Sync room selector with Know More form
+      const roomSelect = document.getElementById("rooms");
+      if (roomSelect) {
+        roomSelect.addEventListener("change", () => {
+          document.getElementById("knowMoreRooms").value = roomSelect.value;
+        });
+      }
+    });
+  </script>
