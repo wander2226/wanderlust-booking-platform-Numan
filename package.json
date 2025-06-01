@@ -1,16 +1,17 @@
 {
   "engines": {
-    "node": "v20.12.1"
+    "node": "20.x"
   },
   "name": "WanderLust",
   "version": "1.0.0",
   "description": "This is my major project",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "MD Affan Asghar",
+  "author": "Numan Ahamed",
   "license": "ISC",
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.15.3",
