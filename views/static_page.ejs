@@ -1,17 +1,17 @@
 <% layout("layouts/boilerplate") %>
 
 <div class="container my-5">
-  <div class="col-md-10 offset-md-1">
-    <h1 class="mb-4 text-center"><%= page.title %></h1>
+  <div class="col-lg-10 col-md-11 mx-auto">
+    <h1 class="mb-4 text-center text-primary"><%= page.title %></h1>
 
-    <div class="card shadow-sm p-4 bg-light">
-      <p style="font-size: 1.1rem; line-height: 1.8;">
+    <div class="card shadow-sm p-4 bg-light border-0">
+      <div style="font-size: 1.1rem; line-height: 1.8; color: #333;">
         <%- page.content %>
-      </p>
+      </div>
     </div>
 
     <div class="text-center mt-4">
-      <a href="/" class="btn btn-outline-primary">
+      <a href="/" class="btn btn-outline-primary btn-lg">
         <i class="fa-solid fa-arrow-left"></i> Back to Home
       </a>
     </div>

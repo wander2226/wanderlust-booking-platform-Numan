@@ -1,5 +1,8 @@
 require("dotenv").config();
 console.log("✅ MAPBOX_TOKEN Loaded:", process.env.MAPBOX_TOKEN);
+console.log("✅ GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
+console.log("✅ ALL ENV KEYS:", Object.keys(process.env));
+
 
 const express = require("express");
 const app = express();
@@ -175,6 +178,8 @@ app.use((err, req, res, next) => {
 });
 
 // ✅ Server start
-app.listen(8080, () => {
-  console.log("🚀 Server running on port 8080");
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
+
