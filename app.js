@@ -3,7 +3,6 @@ console.log("✅ MAPBOX_TOKEN Loaded:", process.env.MAPBOX_TOKEN);
 console.log("✅ GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
 console.log("✅ ALL ENV KEYS:", Object.keys(process.env));
 
-
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -18,7 +17,16 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 
-// ✅ Route imports
+/* ===============================
+   🔥 LOAD PASSPORT STRATEGIES
+   =============================== */
+// 🔥 LOAD OAUTH STRATEGIES (MANDATORY)
+require("./controllers/googles.js");
+require("./controllers/githubs.js");
+
+/* ===============================
+   🔗 ROUTE IMPORTS
+   =============================== */
 const googleRoute = require("./routes/google.js");
 const githubRoute = require("./routes/github.js");
 const stripePaymentRoute = require("./routes/payments");
@@ -26,9 +34,11 @@ const listingRouter = require("./routes/listing.js");
 const reviewRouter = require("./routes/review.js");
 const userRouter = require("./routes/user.js");
 const emailRoutes = require("./routes/email.js");
-const footerPagesRouter = require("./routes/footerPages.js"); // ✅ NEW LINE
+const footerPagesRouter = require("./routes/footerPages.js");
 
-// ✅ Connect to MongoDB
+/* ===============================
+   🗄️ DATABASE CONNECTION
+   =============================== */
 const dbUrl = process.env.ATLASDB_URL;
 
 async function main() {
@@ -38,24 +48,29 @@ main()
   .then(() => console.log("✅ Connected to MongoDB Atlas"))
   .catch((err) => console.log("❌ MongoDB Error:", err));
 
-// ✅ View engine setup
+/* ===============================
+   🎨 VIEW ENGINE
+   =============================== */
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// ✅ Middleware
+/* ===============================
+   🧩 MIDDLEWARE
+   =============================== */
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "public")));
 
-// ✅ Session store setup
+/* ===============================
+   🔐 SESSION CONFIG
+   =============================== */
 const store = MongoStore.create({
   mongoUrl: dbUrl,
-  crypto: {
-    secret: process.env.SECRET,
-  },
+  crypto: { secret: process.env.SECRET },
   touchAfter: 24 * 3600,
 });
+
 store.on("error", (e) => {
   console.log("❌ SESSION STORE ERROR:", e);
 });
@@ -75,15 +90,20 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 app.use(flash());
+
+/* ===============================
+   🛂 PASSPORT SETUP
+   =============================== */
 app.use(passport.initialize());
 app.use(passport.session());
 
-// ✅ Passport setup
 passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-// ✅ Set locals for views
+/* ===============================
+   🌍 GLOBAL LOCALS
+   =============================== */
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -92,39 +112,36 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Home redirect
+/* ===============================
+   🏠 HOME
+   =============================== */
 app.get("/", (req, res) => {
   res.redirect("/listings");
 });
 
-app.use("/auth/google", googleRoute);
+/* ===============================
+   🔐 OAUTH ROUTES (CLEAN)
+   =============================== */
+app.use("/auth", googleRoute);
+app.use("/auth", githubRoute);
 
-// ✅ GitHub auth safety check
-if (typeof githubRoute === "function" || typeof githubRoute === "object") {
-  app.use("/auth/github", githubRoute);
-} else {
-  console.log("⚠️ Warning: githubRoute not properly exported");
-}
-
-// ✅ Review edit placeholder
-app.get("/listings/:id/reviewedit", (req, res) => {
-  res.send("<h2>Bro you can simply delete it and add a new review!</h2>");
-});
-
-// ✅ Route bindings
+/* ===============================
+   🧱 MAIN ROUTES
+   =============================== */
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 app.use("/", emailRoutes);
 app.use("/payments", stripePaymentRoute);
-app.use("/", footerPagesRouter); // ✅ MOUNTED STATIC PAGES
+app.use("/", footerPagesRouter);
 
-// 🔍 ADVANCED SEARCH ROUTE
+/* ===============================
+   🔎 ADVANCED SEARCH
+   =============================== */
 const Listing = require("./models/listing.js");
 
 app.get("/listings/search", async (req, res) => {
   const query = req.query.q?.trim() || "";
-
   const words = query.split(/\s+/);
   const regexWords = [];
   const orConditions = [];
@@ -165,21 +182,26 @@ app.get("/listings/search", async (req, res) => {
   }
 });
 
-// ✅ 404 handler
+/* ===============================
+   ❌ 404 HANDLER
+   =============================== */
 app.all("*", (req, res, next) => {
   next(new ExpressError(404, "Page not found!"));
 });
 
-// ✅ Error handler
+/* ===============================
+   💥 ERROR HANDLER
+   =============================== */
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) err.message = "Something went wrong!";
   res.status(statusCode).render("error.ejs", { message: err.message });
 });
 
-// ✅ Server start
+/* ===============================
+   🚀 SERVER START
+   =============================== */
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
-

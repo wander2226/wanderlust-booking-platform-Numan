@@ -1,20 +1,19 @@
 const express = require("express");
 const router = express.Router();
-const passport = require("../controllers/googles.js");
+const passport = require("passport");
 
-// ✅ Initiate Google OAuth
+// Start Google OAuth
 router.get(
-  "/",
+  "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// ✅ Google OAuth callback
+// Google callback
 router.get(
-  "/callback",
+  "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
-  function (req, res) {
-    // Successful login, redirect to home
-    res.redirect("/");
+  (req, res) => {
+    res.redirect("/listings");
   }
 );
 
